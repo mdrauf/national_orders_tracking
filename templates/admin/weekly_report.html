@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Weekly Report</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .weekly-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.7s ease;
+        }
+
+        .weekly-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .weekly-header h2 {
+            color: #60a5fa;
+            font-size: 28px;
+        }
+
+        .employee-info {
+            color: #94a3b8;
+            font-size: 16px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+        }
+
+        .employee-info strong {
+            color: #60a5fa;
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .week-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #8b5cf6;
+            transition: 0.3s;
+        }
+
+        .week-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .week-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .week-title {
+            color: #8b5cf6;
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .week-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .summary-item {
+            background: rgba(139, 92, 246, 0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .summary-item label {
+            display: block;
+            color: #94a3b8;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .summary-item span {
+            color: #60a5fa;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .week-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .week-table th {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .week-table td {
+            padding: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #e2e8f0;
+            font-size: 13px;
+        }
+
+        .week-table tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .no-reports {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        .no-reports-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Weekly Report</h2>
+        <div>
+            <a href="/admin/accounts/{{ employee._id }}" class="btn btn-primary">Back to Accounts</a>
+            <a href="/admin/employees" class="btn btn-primary">Employees</a>
+            <a href="/admin/dashboard" class="btn btn-primary">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="weekly-container">
+        <div class="weekly-header">
+            <h2>Weekly Report - {{ employee.employee_name }}</h2>
+            <a href="/admin/accounts/{{ employee._id }}" class="back-btn">← Back to Accounts</a>
+        </div>
+
+        <div class="employee-info">
+            <strong>Employee:</strong> {{ employee.employee_name }} | 
+            <strong>Role:</strong> {{ employee.role }} | 
+            <strong>Salary Type:</strong> {{ employee.salary_type|capitalize }}
+            {% if employee.salary_type == 'per_day' %}
+             | <strong>Salary Per Day:</strong> ₹{{ "{:,.2f}".format(employee.salary_per_day) }}
+            {% endif %}
+        </div>
+
+        {% if weekly_data %}
+        {% for week in weekly_data %}
+        <div class="week-card">
+            <div class="week-header">
+                <div class="week-title">Week {{ week.week }}</div>
+            </div>
+
+            <div class="week-summary">
+                <div class="summary-item">
+                    <label>Days Worked</label>
+                    <span>{{ week.days_worked }}</span>
+                </div>
+                <div class="summary-item">
+                    <label>Total Salary</label>
+                    <span>₹{{ "{:,.2f}".format(week.total_salary) }}</span>
+                </div>
+                <div class="summary-item">
+                    <label>Total Advance</label>
+                    <span>₹{{ "{:,.2f}".format(week.total_advance) }}</span>
+                </div>
+                <div class="summary-item">
+                    <label>Total to Pay</label>
+                    <span>₹{{ "{:,.2f}".format(week.total_balance) }}</span>
+                </div>
+            </div>
+
+            <table class="week-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Day</th>
+                        <th>Salary Per Day</th>
+                        <th>Advance</th>
+                        <th>Balance (To Pay)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for account in week.accounts %}
+                    <tr>
+                        <td>{{ account.date }}</td>
+                        <td>{{ account.day }}</td>
+                        <td>₹{{ "{:,.2f}".format(account.salary_per_day) }}</td>
+                        <td>₹{{ "{:,.2f}".format(account.advance) }}</td>
+                        <td>₹{{ "{:,.2f}".format(account.balance) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        {% else %}
+        <div class="no-reports">
+            <div class="no-reports-icon">📊</div>
+            <p>No weekly reports found. Add account entries to generate weekly reports.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Elfsight WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy></div>
+
+</body>
+
+</html>

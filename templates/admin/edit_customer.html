@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Customer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <h2>Edit Customer</h2>
+
+        <div>
+            <a href="/admin/customers" class="btn">Customers</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+
+    </div>
+
+    <div class="form-container">
+
+        <h2>Edit Customer Details</h2>
+
+        <form method="POST">
+
+            <input type="text" name="customer_name" placeholder="Customer Name" value="{{ customer.customer_name }}" required>
+
+            <input type="text" name="phone" placeholder="Customer Phone Number" value="{{ customer.phone }}" required>
+
+            <textarea name="address" rows="3" placeholder="Customer Address" required>{{ customer.address }}</textarea>
+
+            <button type="submit" class="submit-btn">
+                Update Customer
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- Elfsight WhatsApp Chat | Untitled WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy></div>
+
+</body>
+
+</html>

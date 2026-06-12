@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .navbar {
+            position: relative;
+            z-index: 1000;
+        }
+
+        .dropdown {
+            position: relative;
+            display: inline-block;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .dropdown-btn {
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+            color: #000000 !important;
+        }
+
+        .dropdown-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .dropdown-content {
+            display: none !important;
+            position: absolute;
+            top: calc(100% + 5px);
+            left: 0;
+            background: #1e293b;
+            min-width: 220px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+            border-radius: 12px;
+            z-index: 10000;
+            border: 2px solid #3b82f6;
+        }
+
+        .dropdown-content.show {
+            display: block !important;
+        }
+
+        .dropdown-content a {
+            color: #ffffff;
+            padding: 14px 20px;
+            text-decoration: none;
+            display: block;
+            transition: all 0.3s ease;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .dropdown-content a:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-content a:hover {
+            background: #3b82f6;
+            color: #ffffff;
+            padding-left: 28px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 30px;
+            margin: 40px auto;
+            width: 95%;
+            max-width: 1200px;
+        }
+
+        .card {
+            flex: 1;
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: 0.3s;
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            text-decoration: none;
+            display: block;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+
+        .card.completed {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .card.completed:hover {
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+        }
+
+        .card h3 {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .card .count {
+            font-size: 48px;
+            font-weight: 700;
+            color: #34d399;
+            text-decoration: none;
+        }
+
+        .card.completed .count {
+            color: #10b981;
+        }
+
+        .card.value {
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.2), rgba(217, 119, 6, 0.2));
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .card.value:hover {
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.3);
+        }
+
+        .card.value .count {
+            color: #f59e0b;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Admin Dashboard</h2>
+
+        <div>
+            <div class="dropdown">
+                <button class="btn btn-info dropdown-btn">View Reports ▼</button>
+                <div class="dropdown-content">
+                    <a href="/admin/pending">Pending Orders</a>
+                    <a href="/admin/completed">Completed Orders</a>
+                    <a href="/admin/customers">View Customers</a>
+                    <a href="/admin/employees">View Employees</a>
+                </div>
+            </div>
+            <div class="dropdown">
+                <button class="btn btn-info dropdown-btn">Add More ▼</button>
+                <div class="dropdown-content">
+                    <a href="/admin/categories">Add Category</a>
+                    <a href="/admin/models">Add Model</a>
+                    <a href="/admin/brands">Add Brand</a>
+                </div>
+            </div>
+            <a href="/add_order" class="btn btn-success">+ Add Order</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="cards">
+        <a href="/admin/pending" class="card">
+            <h3>Pending Orders</h3>
+            <div class="count">{{ pending|length }}</div>
+        </a>
+        <a href="/admin/completed" class="card completed">
+            <h3>Completed Orders</h3>
+            <div class="count">{{ completed|length }}</div>
+        </a>
+        <div class="card value">
+            <h3>Orders Value</h3>
+            <div class="count">₹{{ "{:,.2f}".format(pending_orders_value) }}</div>
+        </div>
+    </div>
+
+    <!-- Elfsight WhatsApp Chat | Untitled WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy"></div>
+
+    <script>
+        const dropdowns = document.querySelectorAll('.dropdown');
+        let timeout;
+
+        dropdowns.forEach(dropdown => {
+            const content = dropdown.querySelector('.dropdown-content');
+
+            dropdown.addEventListener('mouseenter', function() {
+                clearTimeout(timeout);
+                // Close all other dropdowns
+                dropdowns.forEach(d => {
+                    if (d !== dropdown) {
+                        d.querySelector('.dropdown-content').classList.remove('show');
+                    }
+                });
+                content.classList.add('show');
+            });
+
+            dropdown.addEventListener('mouseleave', function() {
+                timeout = setTimeout(() => {
+                    content.classList.remove('show');
+                }, 300);
+            });
+        });
+    </script>
+
+</body>
+
+</html>

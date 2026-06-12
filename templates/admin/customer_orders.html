@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Customer Orders</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .customer-orders-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.7s ease;
+        }
+
+        .customer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .customer-header h2 {
+            color: #60a5fa;
+            font-size: 28px;
+        }
+
+        .customer-info-card {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .customer-details h3 {
+            color: white;
+            font-size: 22px;
+            margin-bottom: 10px;
+        }
+
+        .customer-details p {
+            color: #94a3b8;
+            margin: 5px 0;
+        }
+
+        .customer-stats {
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-item .number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #34d399;
+        }
+
+        .stat-item .label {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .orders-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .order-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            transition: 0.3s;
+            border-left: 4px solid #3b82f6;
+            animation: slideIn 0.5s ease;
+        }
+
+        .order-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .order-card.completed {
+            border-left-color: #10b981;
+        }
+
+        .order-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .order-id {
+            font-size: 14px;
+            color: #94a3b8;
+        }
+
+        .order-status {
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .order-status.pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .order-status.completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .order-total {
+            font-size: 24px;
+            font-weight: 700;
+            color: #34d399;
+            margin: 15px 0;
+        }
+
+        .order-items-preview {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .order-date {
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .view-order-btn {
+            display: inline-block;
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .view-order-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+
+        .no-orders {
+            text-align: center;
+            padding: 60px;
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Customer Orders</h2>
+        <div>
+            <a href="/admin/customers" class="btn">All Customers</a>
+            <a href="/admin/dashboard" class="btn btn-primary">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="customer-orders-container">
+        <div class="customer-header">
+            <h2>{{ customer.customer_name }} - Order History</h2>
+            <a href="/admin/customers" class="back-btn">← Back to Customers</a>
+        </div>
+
+        {% if customer %}
+        <div class="customer-info-card">
+            <div class="customer-details">
+                <h3>{{ customer.customer_name }}</h3>
+                <p>📞 {{ customer.phone }}</p>
+                <p>📍 {{ customer.address }}</p>
+            </div>
+            <div class="customer-stats">
+                <div class="stat-item">
+                    <div class="number">{{ orders|length }}</div>
+                    <div class="label">Total Orders</div>
+                </div>
+                <div class="stat-item">
+                    <div class="number">
+                        {% set total = orders|sum(attribute='total_amount') %}
+                        ₹{{ "%.0f"|format(total) }}
+                    </div>
+                    <div class="label">Total Spent</div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if orders %}
+        <div class="orders-grid">
+            {% for order in orders %}
+            <div class="order-card {% if order.status == 'Completed' %}completed{% endif %}">
+                <div class="order-card-header">
+                    <span class="order-id">#{{ order._id }}</span>
+                    <span class="order-status {{ order.status.lower() }}">{{ order.status }}</span>
+                </div>
+                
+                <div class="order-total">₹{{ "%.2f"|format(order.total_amount) }}</div>
+                
+                <div class="order-items-preview">
+                    {% if order.billing_items %}
+                        {{ order.billing_items|length }} item(s)
+                    {% else %}
+                        No items
+                    {% endif %}
+                </div>
+                
+                <div class="order-date">
+                    Category: {{ order.category }}
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <a href="/view_order/{{ order._id }}" class="view-order-btn">View Order Details</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-orders">
+            <p>No orders found for this customer.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Elfsight WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy></div>
+
+</body>
+
+</html>

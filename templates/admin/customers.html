@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Customers</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .search-container {
+            margin: 30px auto;
+            width: 95%;
+            max-width: 600px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            font-size: 16px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .search-input:focus {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.02);
+        }
+
+        .search-input::placeholder {
+            color: #94a3b8;
+        }
+
+        .customer-row {
+            display: table-row;
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <h2>Customer Database</h2>
+
+        <div>
+            <a href="/admin/dashboard" class="btn">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+
+    </div>
+
+    <div class="search-container">
+        <input type="text" id="searchInput" class="search-input" placeholder="Search by customer name or phone number...">
+    </div>
+
+    <table id="customersTable">
+
+        <tr>
+            <th>Customer Name</th>
+            <th>Phone Number</th>
+            <th>Address</th>
+            <th>Actions</th>
+        </tr>
+
+        {% for customer in customers %}
+
+        <tr class="customer-row" data-name="{{ customer.customer_name|lower }}" data-phone="{{ customer.phone }}">
+
+            <td>{{ customer.customer_name }}</td>
+            <td>{{ customer.phone }}</td>
+            <td>{{ customer.address }}</td>
+            <td>
+                <a href="/customer_orders/{{ customer.phone }}" class="edit-btn" style="background: #8b5cf6;">
+                    View Orders
+                </a>
+                <a href="/edit_customer/{{ customer._id }}" class="edit-btn">
+                    Edit
+                </a>
+                <a href="/delete_customer/{{ customer._id }}" class="delete-btn" onclick="return confirm('Delete Customer?')">
+                    Delete
+                </a>
+            </td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+    <!-- Elfsight WhatsApp Chat | Untitled WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy"></div>
+
+    <script>
+        const searchInput = document.getElementById('searchInput');
+        const customerRows = document.querySelectorAll('.customer-row');
+
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+
+            customerRows.forEach(row => {
+                const name = row.getAttribute('data-name');
+                const phone = row.getAttribute('data-phone');
+
+                if (name.includes(searchTerm) || phone.includes(searchTerm)) {
+                    row.classList.remove('hidden');
+                } else {
+                    row.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+
+</body>
+
+</html>

@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>View Order Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .order-details-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.7s ease;
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .order-header h2 {
+            color: #60a5fa;
+            font-size: 28px;
+        }
+
+        .order-id {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #60a5fa;
+        }
+
+        .customer-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border-left: 4px solid #3b82f6;
+        }
+
+        .customer-card h3 {
+            color: #60a5fa;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .customer-info {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .info-item label {
+            display: block;
+            color: #94a3b8;
+            font-size: 13px;
+            margin-bottom: 5px;
+        }
+
+        .info-item p {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .billing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 25px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .billing-table th {
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            padding: 15px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+        }
+
+        .billing-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .billing-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .billing-table .amount {
+            color: #34d399;
+            font-weight: 600;
+        }
+
+        .supplied-row {
+            background-color: rgba(250, 204, 21, 0.3) !important;
+        }
+
+        .supplied-btn {
+            padding: 6px 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            color: #e2e8f0;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .supplied-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .supplied-btn.supplied-active {
+            background: rgba(234, 179, 8, 0.8);
+            border-color: #eab308;
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .supplied-btn.supplied-active:hover {
+            background: rgba(234, 179, 8, 1);
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.2));
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .total-label {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 36px;
+            font-weight: 700;
+            color: #34d399;
+            text-shadow: 0 0 20px rgba(52, 211, 153, 0.5);
+        }
+
+        .status-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .status-pending {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+        }
+
+        .status-completed {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+        }
+
+        .parcel-details {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .parcel-details h3 {
+            color: #60a5fa;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .parcel-details p {
+            color: #e2e8f0;
+            line-height: 1.6;
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: 0.3s;
+            margin-right: 10px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .print-btn {
+            background: linear-gradient(135deg, #8b5cf6, #6366f1);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .print-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(139, 92, 246, 0.4);
+        }
+
+        @media print {
+            .navbar, .action-buttons, .back-btn {
+                display: none;
+            }
+            .order-details-container {
+                box-shadow: none;
+                background: white;
+                color: black;
+            }
+            body {
+                background: white;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Order Details</h2>
+        <div>
+            <a href="/admin/dashboard" class="btn btn-primary">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="order-details-container">
+        <div class="order-header">
+            <h2>Order #{{ order._id }}</h2>
+            <div style="display: flex; gap: 15px; align-items: center;">
+                <span class="order-id">ID: {{ order._id }}</span>
+                <span class="status-badge {% if order.status == 'Pending' %}status-pending{% else %}status-completed{% endif %}">
+                    {{ order.status }}
+                </span>
+            </div>
+        </div>
+
+        <div class="customer-card">
+            <h3>Customer Information</h3>
+            <div class="customer-info">
+                <div class="info-item">
+                    <label>Name</label>
+                    <p>{{ order.customer_name }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Phone</label>
+                    <p>{{ order.phone }}</p>
+                </div>
+                <div class="info-item">
+                    <label>Address</label>
+                    <p>{{ order.address }}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="billing-section">
+            <h3 style="color: #60a5fa; margin-bottom: 20px; font-size: 20px;">Billing Items</h3>
+            <table class="billing-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Category</th>
+                        <th>Model</th>
+                        <th>Brand</th>
+                        <th>Quantity</th>
+                        <th>Rate (₹)</th>
+                        <th>Amount (₹)</th>
+                        <th>Supplied</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.billing_items %}
+                    <tr class="billing-row {% if item.get('supplied', False) %}supplied-row{% endif %}" data-item-index="{{ loop.index0 }}">
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.category }}</td>
+                        <td>{{ item.model }}</td>
+                        <td>{{ item.brand }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₹{{ item.rate }}</td>
+                        <td class="amount">₹{{ item.amount }}</td>
+                        <td>
+                            <button class="supplied-btn {% if item.get('supplied', False) %}supplied-active{% endif %}" 
+                                    onclick="toggleSupplied('{{ order._id }}', {{ loop.index0 }})">
+                                Supplied
+                            </button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="total-section">
+                <div class="total-label">Grand Total</div>
+                <div class="total-amount">₹{{ "%.2f"|format(order.total_amount) }}</div>
+            </div>
+        </div>
+
+        {% if order.parcel_details %}
+        <div class="parcel-details">
+            <h3>Parcel Details</h3>
+            <p>{{ order.parcel_details }}</p>
+        </div>
+        {% endif %}
+
+        <div class="action-buttons">
+            <a href="/admin/pending" class="back-btn">← Back to Orders</a>
+            <button class="print-btn" onclick="window.print()">🖨 Print Order</button>
+            {% if order.status == 'Pending' %}
+            <a href="/complete/{{ order._id }}" class="btn btn-success">Mark Complete</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Elfsight WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy></div>
+
+    <script>
+        function toggleSupplied(orderId, itemIndex) {
+            fetch(`/toggle_supplied/${orderId}/${itemIndex}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Find the row and button
+                    const row = document.querySelector(`tr[data-item-index="${itemIndex}"]`);
+                    const button = row.querySelector('.supplied-btn');
+                    
+                    if (data.supplied) {
+                        // Add supplied styling
+                        row.classList.add('supplied-row');
+                        button.classList.add('supplied-active');
+                    } else {
+                        // Remove supplied styling
+                        row.classList.remove('supplied-row');
+                        button.classList.remove('supplied-active');
+                    }
+                } else {
+                    alert('Failed to update supplied status');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error updating supplied status');
+            });
+        }
+    </script>
+
+</body>
+
+</html>

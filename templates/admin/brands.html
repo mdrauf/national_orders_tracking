@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Manage Brands</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .brand-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .brand-table th {
+            background: rgba(59, 130, 246, 0.3);
+            padding: 15px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+        }
+
+        .brand-table td {
+            padding: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .brand-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-right: 5px;
+            transition: 0.3s;
+        }
+
+        .edit-btn {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .edit-btn:hover {
+            background: #d97706;
+        }
+
+        .delete-btn {
+            background: #ef4444;
+            color: white;
+        }
+
+        .delete-btn:hover {
+            background: #dc2626;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 18px;
+        }
+
+        .category-badge {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 13px;
+            color: #60a5fa;
+        }
+
+        .category-selector {
+            margin-bottom: 20px;
+        }
+
+        .category-selector select {
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+            min-width: 200px;
+        }
+
+        .category-selector select option {
+            background: #1e293b;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Manage Brands</h2>
+
+        <div>
+            <a href="/admin/dashboard" class="btn">Dashboard</a>
+            <a href="/admin/categories" class="btn">Manage Categories</a>
+            <a href="/admin/models" class="btn">Manage Models</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="form-container">
+
+        <div class="header-section">
+            <h2>Brands List</h2>
+            <a href="/admin/brand/add" class="add-btn">+ Add Brand</a>
+        </div>
+
+        <div class="category-selector">
+            <select onchange="location.href='/admin/brands?category_id=' + this.value">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                <option value="{{ category._id }}" {% if selected_category == category._id|string %}selected{% endif %}>
+                    {{ category.name }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {% if brands %}
+        <table class="brand-table">
+            <thead>
+                <tr>
+                    <th style="width: 10%;">#</th>
+                    <th style="width: 35%;">Brand Name</th>
+                    <th style="width: 25%;">Category</th>
+                    <th style="width: 30%;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for brand in brands %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ brand.name }}</td>
+                    <td><span class="category-badge">{{ brand.category_name }}</span></td>
+                    <td>
+                        <a href="/admin/brand/edit/{{ brand._id }}" class="action-btn edit-btn">Edit</a>
+                        <a href="/admin/brand/delete/{{ brand._id }}" class="action-btn delete-btn"
+                           onclick="return confirm('Are you sure you want to delete this brand?')">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="no-data">
+            No brands found. Click "Add Brand" to create one.
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

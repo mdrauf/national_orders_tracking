@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Edit Category</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Edit Category</h2>
+
+        <div>
+            <a href="/admin/categories" class="btn">Back to Categories</a>
+            <a href="/admin/dashboard" class="btn">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="form-container">
+
+        <h2>Edit Category</h2>
+
+        <form method="POST">
+
+            <input type="text" name="category_name" value="{{ category.name }}" required>
+
+            <button type="submit" class="submit-btn">
+                Update Category
+            </button>
+
+        </form>
+
+    </div>
+
+</body>
+
+</html>

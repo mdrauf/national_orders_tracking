@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Manage Employees</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .employees-container {
+            max-width: 1400px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.7s ease;
+        }
+
+        .employees-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .employees-header h2 {
+            color: #60a5fa;
+            font-size: 28px;
+        }
+
+        .add-employee-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+            display: inline-block;
+        }
+
+        .add-employee-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .employees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .employee-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 4px solid #3b82f6;
+            transition: 0.3s;
+            position: relative;
+        }
+
+        .employee-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .employee-photo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+            border: 3px solid #3b82f6;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .employee-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: #60a5fa;
+            margin-bottom: 10px;
+        }
+
+        .employee-role {
+            font-size: 14px;
+            color: #94a3b8;
+            margin-bottom: 15px;
+            font-weight: 500;
+        }
+
+        .employee-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            font-size: 13px;
+        }
+
+        .detail-item label {
+            display: block;
+            color: #94a3b8;
+            font-size: 11px;
+            margin-bottom: 3px;
+        }
+
+        .detail-item span {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+
+        .employee-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: 0.3s;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .edit-btn {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
+        }
+
+        .edit-btn:hover {
+            background: rgba(59, 130, 246, 0.3);
+        }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.2);
+            color: #f87171;
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.3);
+        }
+
+        .no-employees {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+            font-size: 18px;
+        }
+
+        .no-employees-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Manage Employees</h2>
+        <div>
+            <a href="/admin/roles" class="btn btn-primary">Manage Roles</a>
+            <a href="/admin/dashboard" class="btn btn-primary">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="employees-container">
+        <div class="employees-header">
+            <h2>Employees ({{ employee_count }})</h2>
+            <a href="/admin/employee/add" class="add-employee-btn">+ Add Employee</a>
+        </div>
+
+        {% if employees %}
+        <div class="employees-grid">
+            {% for employee in employees %}
+            <div class="employee-card">
+                {% if employee.photo %}
+                <img src="{{ url_for('static', filename=employee.photo) }}" alt="{{ employee.employee_name }}" class="employee-photo">
+                {% else %}
+                <div class="employee-photo" style="display: flex; align-items: center; justify-content: center; font-size: 30px; color: #94a3b8;">
+                    👤
+                </div>
+                {% endif %}
+                
+                <div class="employee-name">{{ employee.employee_name }}</div>
+                <div class="employee-role">{{ employee.role }}</div>
+                
+                <div class="employee-details">
+                    <div class="detail-item">
+                        <label>Phone</label>
+                        <span>{{ employee.phone }}</span>
+                    </div>
+                    <div class="detail-item">
+                        <label>Salary</label>
+                        {% if employee.salary_type == 'per_day' %}
+                        <span>₹{{ "{:,.2f}".format(employee.salary_per_day) }}/day</span>
+                        {% elif employee.salary_type == 'variable' %}
+                        <span>Variable</span>
+                        {% else %}
+                        <span>N/A</span>
+                        {% endif %}
+                    </div>
+                    <div class="detail-item">
+                        <label>ID Proof</label>
+                        {% if employee.id_proof %}
+                        <a href="{{ url_for('static', filename=employee.id_proof) }}" target="_blank" style="color: #60a5fa; font-weight: 500;">View Document</a>
+                        {% else %}
+                        <span>N/A</span>
+                        {% endif %}
+                    </div>
+                    <div class="detail-item">
+                        <label>Address</label>
+                        <span>{{ employee.address or 'N/A' }}</span>
+                    </div>
+                </div>
+                
+                <div class="employee-actions">
+                    <a href="/admin/accounts/{{ employee._id }}" class="action-btn" style="background: rgba(16, 185, 129, 0.2); color: #10b981;">Accounts</a>
+                    <a href="/admin/employee/edit/{{ employee._id }}" class="action-btn edit-btn">Edit</a>
+                    <a href="/admin/employee/delete/{{ employee._id }}" class="action-btn delete-btn"
+                       onclick="return confirm('Are you sure you want to delete this employee?')">Delete</a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="no-employees">
+            <div class="no-employees-icon">👥</div>
+            <p>No employees found. Click "Add Employee" to get started.</p>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Elfsight WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy></div>
+
+</body>
+
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Add Account Entry</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .account-form-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            border-radius: 25px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 0.7s ease;
+        }
+
+        .form-header {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .form-header h2 {
+            color: #60a5fa;
+            font-size: 28px;
+        }
+
+        .employee-info {
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+        }
+
+        .employee-info strong {
+            color: #60a5fa;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #94a3b8;
+            font-size: 14px;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            background: rgba(255, 255, 255, 0.15);
+            transform: scale(1.02);
+        }
+
+        .form-group select option {
+            background: #1e293b;
+            color: white;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: 0.3s;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .back-btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: 0.3s;
+            margin-right: 10px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 30px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="navbar">
+        <h2>Add Account Entry</h2>
+        <div>
+            <a href="/admin/accounts/{{ employee._id }}" class="btn btn-primary">Back to Accounts</a>
+            <a href="/admin/employees" class="btn btn-primary">Employees</a>
+            <a href="/admin/dashboard" class="btn btn-primary">Dashboard</a>
+            <a href="/logout" class="btn btn-danger">Logout</a>
+        </div>
+    </div>
+
+    <div class="account-form-container">
+        <div class="form-header">
+            <h2>Add Account Entry</h2>
+        </div>
+
+        <div class="employee-info">
+            <strong>Employee:</strong> {{ employee.employee_name }} | 
+            <strong>Role:</strong> {{ employee.role }} | 
+            <strong>Salary Type:</strong> {{ employee.salary_type|capitalize }}
+            {% if employee.salary_type == 'per_day' %}
+             | <strong>Salary Per Day:</strong> ₹{{ "{:,.2f}".format(employee.salary_per_day) }}
+            {% endif %}
+        </div>
+
+        <form method="POST">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Day *</label>
+                    <select name="day" required>
+                        <option value="">Select Day</option>
+                        <option value="Monday">Monday</option>
+                        <option value="Tuesday">Tuesday</option>
+                        <option value="Wednesday">Wednesday</option>
+                        <option value="Thursday">Thursday</option>
+                        <option value="Friday">Friday</option>
+                        <option value="Saturday">Saturday</option>
+                        <option value="Sunday">Sunday</option>
+                    </select>
+                </div>
+            </div>
+
+            {% if employee.salary_type == 'per_day' %}
+            <div class="form-group">
+                <label>Salary Per Day (₹) *</label>
+                <input type="number" name="salary_per_day" required min="0" step="0.01" value="{{ employee.salary_per_day or '' }}" placeholder="Enter salary per day">
+            </div>
+            {% else %}
+            <div class="form-group">
+                <label>Salary (₹) *</label>
+                <input type="number" name="salary_per_day" required min="0" step="0.01" placeholder="Enter salary for this day">
+            </div>
+            {% endif %}
+
+            <div class="form-group">
+                <label>Advance (₹)</label>
+                <input type="number" name="advance" min="0" step="0.01" placeholder="Enter advance amount">
+            </div>
+
+            <div class="action-buttons">
+                <a href="/admin/accounts/{{ employee._id }}" class="back-btn">← Back</a>
+                <button type="submit" class="submit-btn">Add Entry</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Elfsight WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy></div>
+
+</body>
+
+</html>

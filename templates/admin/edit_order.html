@@ -1,0 +1,499 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Edit Order - Billing System</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .billing-section {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .billing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .billing-header h3 {
+            color: #60a5fa;
+            font-size: 20px;
+        }
+
+        .billing-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .billing-table th {
+            background: rgba(59, 130, 246, 0.3);
+            padding: 12px 10px;
+            text-align: left;
+            color: white;
+            font-weight: 600;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .billing-table td {
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .billing-table input,
+        .billing-table select {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.12);
+            color: white;
+            outline: none;
+            transition: 0.3s;
+            margin-bottom: 0;
+        }
+
+        .billing-table input:focus,
+        .billing-table select:focus {
+            background: rgba(255, 255, 255, 0.18);
+            transform: scale(1.02);
+        }
+
+        .billing-table select option {
+            background: #1e293b;
+            color: white;
+        }
+
+        .billing-table .amount-field {
+            background: rgba(16, 185, 129, 0.15);
+            font-weight: 600;
+            color: #34d399;
+        }
+
+        .billing-table .amount-field:focus {
+            background: rgba(16, 185, 129, 0.25);
+        }
+
+        .remove-row-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.3s;
+            opacity: 0.7;
+        }
+
+        .remove-row-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        .add-row-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-row-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+
+        .total-section {
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(6, 182, 212, 0.2));
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            animation: slideIn 0.5s ease;
+        }
+
+        .total-label {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .total-amount {
+            font-size: 32px;
+            font-weight: 700;
+            color: #34d399;
+            text-shadow: 0 0 20px rgba(52, 211, 153, 0.5);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes fadeInRow {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .billing-row {
+            animation: fadeInRow 0.4s ease;
+        }
+
+        .customer-info-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .customer-info-section .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #60a5fa;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 25px;
+            background: linear-gradient(135deg, #3b82f6, #06b6d4);
+            border-radius: 2px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <div class="navbar">
+
+        <h2>Edit Order - Billing System</h2>
+
+        <div>
+
+            <a href="/admin/pending" class="btn btn-primary">
+                Pending Orders
+            </a>
+
+            <a href="/logout" class="btn btn-danger">
+                Logout
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="form-container">
+
+        <h2>Edit Order</h2>
+
+        <form method="POST" id="billingForm">
+
+            <div class="section-title">Customer Information</div>
+
+            <div class="customer-info-section">
+                <input type="text" name="customer_name" placeholder="Customer Name" value="{{ order.customer_name }}" required>
+                <input type="text" name="phone" placeholder="Customer Phone Number" value="{{ order.phone }}" required>
+                <textarea name="address" rows="2" placeholder="Customer Address" required class="full-width">{{ order.address }}</textarea>
+            </div>
+
+            <div class="billing-section">
+                <div class="billing-header">
+                    <h3>Billing Details</h3>
+                    <button type="button" class="add-row-btn" onclick="addBillingRow()">
+                        <span>+</span> Add Product
+                    </button>
+                </div>
+
+                <table class="billing-table" id="billingTable">
+                    <thead>
+                        <tr>
+                            <th style="width: 15%;">Category</th>
+                            <th style="width: 20%;">Model</th>
+                            <th style="width: 15%;">Brand</th>
+                            <th style="width: 10%;">Quantity</th>
+                            <th style="width: 13%;">Rate (₹)</th>
+                            <th style="width: 13%;">Amount (₹)</th>
+                            <th style="width: 7%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="billingBody">
+                        {% for item in order.billing_items %}
+                        <tr class="billing-row" id="row-{{ loop.index }}" data-model="{{ item.model }}">
+                            <td>
+                                <select name="category_{{ loop.index }}" class="category-select" onchange="updateModelsAndBrands(this, {{ loop.index }})">
+                                    <option value="">Select Category</option>
+                                    {% for category in categories %}
+                                    <option value="{{ category._id }}" {% if item.category == category.name %}selected{% endif %}>{{ category.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <select name="model_{{ loop.index }}" class="model-select">
+                                    <option value="">Select Model</option>
+                                </select>
+                            </td>
+                            <td>
+                                <select name="brand_{{ loop.index }}" class="brand-select">
+                                    <option value="">Select Brand</option>
+                                    {% for brand in brands %}
+                                    <option value="{{ brand._id }}" {% if item.brand == brand.name %}selected{% endif %}>{{ brand.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </td>
+                            <td>
+                                <input type="number" name="quantity_{{ loop.index }}" value="{{ item.quantity }}" min="1" oninput="calculateAmount({{ loop.index }})">
+                            </td>
+                            <td>
+                                <input type="number" name="rate_{{ loop.index }}" value="{{ item.rate }}" min="0" step="0.01" oninput="calculateAmount({{ loop.index }})">
+                            </td>
+                            <td>
+                                <input type="text" name="amount_{{ loop.index }}" class="amount-field" id="amount-{{ loop.index }}" readonly value="{{ item.amount }}">
+                            </td>
+                            <td>
+                                <button type="button" class="remove-row-btn" onclick="removeRow({{ loop.index }})">✕</button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <div class="total-section">
+                    <div class="total-label">Grand Total:</div>
+                    <div class="total-amount" id="grandTotal">₹{{ "%.2f"|format(order.total_amount) if order.total_amount else '0.00' }}</div>
+                </div>
+            </div>
+
+            <textarea name="parcel_details" rows="3" placeholder="Additional Parcel Details (Optional)">{{ order.parcel_details }}</textarea>
+
+            <button type="submit" class="submit-btn">
+                Update Order
+            </button>
+
+        </form>
+
+    </div>
+
+    <!-- Elfsight WhatsApp Chat | Untitled WhatsApp Chat -->
+    <script src="https://elfsightcdn.com/platform.js" async></script>
+    <div class="elfsight-app-9be5e72d-c194-46fe-884f-372ae9c99558" data-elfsight-app-lazy"></div>
+
+    <script>
+        let rowCount = {{ order.billing_items|length }};
+
+        // Categories, models, and brands from database
+        const categoriesData = {{ categories | tojson }};
+        const modelsData = {{ models | tojson }};
+        const brandsData = {{ brands | tojson }};
+
+        // Initialize models and brands for existing rows
+        document.addEventListener('DOMContentLoaded', function() {
+            const rows = document.querySelectorAll('.billing-row');
+            rows.forEach((row, index) => {
+                const categorySelect = row.querySelector('.category-select');
+                if (categorySelect && categorySelect.value) {
+                    updateModelsAndBrands(categorySelect, index + 1);
+                    // Set the model value from the original data
+                    const modelSelect = row.querySelector('.model-select');
+                    const originalModel = row.getAttribute('data-model');
+                    if (modelSelect && originalModel) {
+                        setTimeout(() => {
+                            modelSelect.value = originalModel;
+                        }, 100);
+                    }
+                }
+            });
+        });
+
+        function updateModelsAndBrands(selectElement, rowId) {
+            const categoryId = selectElement.value;
+            const row = selectElement.closest('tr');
+            const modelSelect = row.querySelector('.model-select');
+            const brandSelect = row.querySelector('.brand-select');
+
+            // Store the currently selected brand value
+            const selectedBrandValue = brandSelect.value;
+
+            modelSelect.innerHTML = '<option value="">Select Model</option>';
+            brandSelect.innerHTML = '<option value="">Select Brand</option>';
+
+            if (categoryId) {
+                const filteredModels = modelsData.filter(model =>
+                    model.category_id && model.category_id === categoryId
+                );
+
+                filteredModels.forEach(model => {
+                    const option = document.createElement('option');
+                    option.value = model.name;
+                    option.textContent = model.name;
+                    modelSelect.appendChild(option);
+                });
+
+                const filteredBrands = brandsData.filter(brand =>
+                    brand.category_id && brand.category_id === categoryId
+                );
+
+                filteredBrands.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand._id;
+                    option.textContent = brand.name;
+                    brandSelect.appendChild(option);
+                });
+            } else {
+                // Show all brands if no category selected
+                brandsData.forEach(brand => {
+                    const option = document.createElement('option');
+                    option.value = brand._id;
+                    option.textContent = brand.name;
+                    brandSelect.appendChild(option);
+                });
+            }
+
+            // Restore the selected brand value if it still exists in the filtered list
+            if (selectedBrandValue) {
+                const optionExists = Array.from(brandSelect.options).some(option => option.value === selectedBrandValue);
+                if (optionExists) {
+                    brandSelect.value = selectedBrandValue;
+                }
+            }
+        }
+
+        function addBillingRow() {
+            rowCount++;
+            const tbody = document.getElementById('billingBody');
+            const row = document.createElement('tr');
+            row.className = 'billing-row';
+            row.id = `row-${rowCount}`;
+
+            let categoryOptions = '<option value="">Select Category</option>';
+            const categories = {{ categories | tojson }};
+            categories.forEach(category => {
+                categoryOptions += `<option value="${category._id}">${category.name}</option>`;
+            });
+
+            let brandOptions = '<option value="">Select Brand</option>';
+            const brands = {{ brands | tojson }};
+            brands.forEach(brand => {
+                brandOptions += `<option value="${brand._id}">${brand.name}</option>`;
+            });
+
+            row.innerHTML = `
+                <td>
+                    <select name="category_${rowCount}" class="category-select" onchange="updateModelsAndBrands(this, ${rowCount})">
+                        ${categoryOptions}
+                    </select>
+                </td>
+                <td>
+                    <select name="model_${rowCount}" class="model-select">
+                        <option value="">Select Model</option>
+                    </select>
+                </td>
+                <td>
+                    <select name="brand_${rowCount}" class="brand-select">
+                        ${brandOptions}
+                    </select>
+                </td>
+                <td>
+                    <input type="number" name="quantity_${rowCount}" min="1" value="1" oninput="calculateAmount(${rowCount})">
+                </td>
+                <td>
+                    <input type="number" name="rate_${rowCount}" min="0" step="0.01" placeholder="0.00" oninput="calculateAmount(${rowCount})">
+                </td>
+                <td>
+                    <input type="text" name="amount_${rowCount}" class="amount-field" id="amount-${rowCount}" readonly value="0.00">
+                </td>
+                <td>
+                    <button type="button" class="remove-row-btn" onclick="removeRow(${rowCount})">✕</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        }
+
+        function removeRow(rowId) {
+            const row = document.getElementById(`row-${rowId}`);
+            if (row) {
+                row.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    row.remove();
+                    calculateTotal();
+                }, 300);
+            }
+        }
+
+        function calculateAmount(rowId) {
+            const quantity = parseFloat(document.querySelector(`input[name="quantity_${rowId}"]`).value) || 0;
+            const rate = parseFloat(document.querySelector(`input[name="rate_${rowId}"]`).value) || 0;
+            const amount = quantity * rate;
+
+            document.getElementById(`amount-${rowId}`).value = amount.toFixed(2);
+            calculateTotal();
+        }
+
+        function calculateTotal() {
+            let total = 0;
+            const amountFields = document.querySelectorAll('.amount-field');
+
+            amountFields.forEach(field => {
+                total += parseFloat(field.value) || 0;
+            });
+
+            document.getElementById('grandTotal').textContent = `₹${total.toFixed(2)}`;
+        }
+
+        // Add fadeOut animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeOut {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(30px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+
+</body>
+
+</html>
